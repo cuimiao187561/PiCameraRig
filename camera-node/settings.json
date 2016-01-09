@@ -1,0 +1,12 @@
+{
+  "clientID": "A",
+  "brokerURL": "broker.i-dat.org",
+  "brokerPort": 80,
+  "captureTopic": "capture",
+  "shutdownTopic": "shutdown",
+  "localImageFolder": "/media/usb/images/",
+  "camera_settings":{
+    "hflip": true,
+    "vflip": true
+  }
+}
