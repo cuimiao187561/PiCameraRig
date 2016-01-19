@@ -17,8 +17,8 @@ class cameraThread(threading.Thread):
         # set up camera
         self.camera = picamera.PiCamera()
         self.camera.start_preview()
-	    self.camera.resolution = (2592,1944)
-	    self.camera.led = False
+        self.camera.resolution = (2592, 1944)
+        self.camera.led = False
 
         # load settings
         self.camera.hflip = settings["hflip"]
