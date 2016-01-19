@@ -21,6 +21,7 @@ m = mqttThread(
     settings["brokerPort"],
     settings["captureTopic"],
     settings["shutdownTopic"],
+    settings["settingsTopic"],
     cameraThread(settings["localImageFolder"], settings["camera_settings"]),
 )
 
