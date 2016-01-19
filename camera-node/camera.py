@@ -27,3 +27,7 @@ class cameraThread(threading.Thread):
     def capture(self):
         now = time.time()
         self.camera.capture(self.filePath + str(now) + '.jpg')
+
+    def update_setting(self, setting, value):
+        setattr(self.camera, setting, int(value))
+        print getattr(self.camera, setting)
