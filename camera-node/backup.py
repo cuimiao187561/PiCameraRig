@@ -30,10 +30,13 @@ time.sleep(60)
 with open('/media/usb/settings.json') as data_file:
     settings = json.load(data_file)
 
-b = backupThread(
-    settings["backupMountScript"],
-    settings["localImageFolder"],
-    settings["backupDirectory"]
-)
-
-b.start()
+print settings["backupActive"]
+if settings["backupActive"]:
+    b = backupThread(
+        settings["backupMountScript"],
+        settings["localImageFolder"],
+        settings["backupDirectory"]
+    )
+    b.start()
+else:
+    ainput = raw_input("Backup deactivated")
