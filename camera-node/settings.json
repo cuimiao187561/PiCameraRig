@@ -1,12 +1,16 @@
 {
   "clientID": "A",
-  "brokerURL": "broker.i-dat.org",
-  "brokerPort": 80,
+  "brokerURL": "controller.local",
+  "brokerPort": 1883,
   "captureTopic": "capture",
   "shutdownTopic": "shutdown",
+  "settingsTopic": "settings/A/",
   "localImageFolder": "/media/usb/images/",
   "camera_settings":{
     "hflip": true,
     "vflip": true
-  }
+  },
+  "backupMountScript": "sudo mount -t cifs -o user=Qualia-A,password=manovich  //Qualia-As-Mac-mini.local/images /media/nas/",
+  "backupDirectory": "/media/nas/A/",
+  "backupActive": true
 }
