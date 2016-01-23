@@ -5,6 +5,7 @@
   "captureTopic": "capture",
   "shutdownTopic": "shutdown",
   "settingsTopic": "settings/A/",
+  "fallbackLoopTime": 10,
   "localImageFolder": "/media/usb/images/",
   "camera_settings":{
     "hflip": true,

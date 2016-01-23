@@ -9,6 +9,8 @@ import socket
 import fcntl
 import struct
 
+import time
+
 def get_ip_address(ifname):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     return socket.inet_ntoa(fcntl.ioctl(
@@ -21,7 +23,7 @@ def get_ip_address(ifname):
 class mqttThread(threading.Thread):
     # setup the thread object
     # def __init__(self, id, brokerURL, brokerPort, settings):
-    def __init__(self, clientID, brokerURL, brokerPort, captureTopic, shutdownTopic, settingsTopic, cameraThread):
+    def __init__(self, clientID, brokerURL, brokerPort, captureTopic, shutdownTopic, settingsTopic, fallbackLoopTime, cameraThread):
         threading.Thread.__init__(self)
 
         # setup thread variables
@@ -31,6 +33,7 @@ class mqttThread(threading.Thread):
         self.captureTopic = str(captureTopic)
         self.shutdownTopic = str(shutdownTopic)
         self.settingsTopic = str(settingsTopic)
+        self.fallbackLoopTime = fallbackLoopTime
         self.cameraThread = cameraThread
 
         self.client = mqtt.Client(client_id=clientID, clean_session=True)
@@ -47,7 +50,7 @@ class mqttThread(threading.Thread):
 
     def update_setting(self, payload):
         settings = json.loads(payload)
-        self.client.publish("debug", self.clientID + " updating " + str(settings["setting"])+ " "+str(settings["value"])) 
+        self.client.publish("debug", self.clientID + " updating " + str(settings["setting"])+ " "+str(settings["value"]))
         self.cameraThread.update_setting(settings["setting"],settings["value"])
 
     def on_message(self, client, userdata, message):
@@ -60,15 +63,31 @@ class mqttThread(threading.Thread):
         elif message.topic == self.settingsTopic:
             self.update_setting(message.payload)
 
+    def on_connect(self, client, userdata, flags, rc):
+        print("Connection returned " + str(rc))
+
+    def fallback(self):
+        while True:
+            self.capture()
+            time.sleep(self.fallbackLoopTime)
+            print "taking image"
+
     def run(self):
-        self.client.connect(self.brokerURL, self.brokerPort, 60)
+        #self.client.on_connect = self.on_connect
 
-        self.client.subscribe(self.captureTopic, qos=0)
-        self.client.subscribe(self.shutdownTopic, qos=0)
-        self.client.subscribe(self.settingsTopic, qos=0)
+        print self.brokerURL
+        try:
+            self.client.connect(self.brokerURL, self.brokerPort, 60)
 
-        self.client.on_message = self.on_message
+            self.client.subscribe(self.captureTopic, qos=0)
+            self.client.subscribe(self.shutdownTopic, qos=0)
+            self.client.subscribe(self.settingsTopic, qos=0)
 
-        print "connected!"
-        self.client.publish("debug", self.clientID + " connected IP:" + get_ip_address('eth0'))
-        self.client.loop_forever()
+            self.client.on_message = self.on_message
+
+            print "connected!"
+            self.client.publish("debug", self.clientID + " connected IP:" + get_ip_address('eth0'))
+            self.client.loop_forever()
+        except socket.gaierror:
+            print "No Connection"
+            self.fallback()

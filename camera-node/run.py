@@ -22,6 +22,7 @@ m = mqttThread(
     settings["captureTopic"],
     settings["shutdownTopic"],
     settings["settingsTopic"],
+    settings["fallbackLoopTime"],
     cameraThread(settings["localImageFolder"], settings["camera_settings"]),
 )
 
