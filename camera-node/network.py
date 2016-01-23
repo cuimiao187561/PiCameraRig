@@ -36,6 +36,8 @@ class mqttThread(threading.Thread):
         self.fallbackLoopTime = fallbackLoopTime
         self.cameraThread = cameraThread
 
+        self.cameraThread.update_annotation("Camera " + self.clientID + " Connecting...", "blue")
+
         self.client = mqtt.Client(client_id=clientID, clean_session=True)
 
     def shutdown(self):
@@ -68,6 +70,7 @@ class mqttThread(threading.Thread):
 
     def fallback(self):
         while True:
+            self.cameraThread.update_annotation("Camera " + self.clientID + " Fallback Mode: " + str(self.fallbackLoopTime) + "secs", "red")
             self.capture()
             time.sleep(self.fallbackLoopTime)
             print "taking image"
@@ -87,6 +90,7 @@ class mqttThread(threading.Thread):
 
             print "connected!"
             self.client.publish("debug", self.clientID + " connected IP:" + get_ip_address('eth0'))
+            self.cameraThread.update_annotation("Camera " + self.clientID, "green")
             self.client.loop_forever()
         except socket.gaierror:
             print "No Connection"
