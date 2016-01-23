@@ -1,19 +1,23 @@
 {
-  "clientID": "A",
-  "brokerURL": "controller.local",
-  "brokerPort": 1883,
-  "captureTopic": "capture",
-  "shutdownTopic": "shutdown",
-  "settingsTopic": "settings/A/",
-  "fallbackLoopTime": 10,
-  "localImageFolder": "/media/usb/images/",
-  "camera_settings":{
-    "hflip": true,
+  "camera_settings": {
+    "led": false,
     "vflip": true,
+    "hflip": true,
     "annotate_text_size": 128,
-    "led": false
+  },
+  "backupActive": true,
+  "brokerPort": 1883,
+  "clientID": "A",
+  "fallbackLoopTime": 10,
+  "pinsTopic": "pins/A/",
+  "shutdownTopic": "shutdown",
+  "pin_settings": {
+    "18": false
   },
   "backupMountScript": "sudo mount -t cifs -o user=Qualia-A,password=manovich  //Qualia-As-Mac-mini.local/images /media/nas/",
   "backupDirectory": "/media/nas/A/",
-  "backupActive": true
+  "settingsTopic": "settings/A/",
+  "captureTopic": "capture",
+  "localImageFolder": "/media/usb/images/",
+  "brokerURL": "controller.local"
 }

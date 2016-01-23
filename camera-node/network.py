@@ -23,7 +23,7 @@ def get_ip_address(ifname):
 class mqttThread(threading.Thread):
     # setup the thread object
     # def __init__(self, id, brokerURL, brokerPort, settings):
-    def __init__(self, clientID, brokerURL, brokerPort, captureTopic, shutdownTopic, settingsTopic, fallbackLoopTime, cameraThread):
+    def __init__(self, clientID, brokerURL, brokerPort, captureTopic, shutdownTopic, settingsTopic, pinsTopic, fallbackLoopTime, cameraThread, pinsThread):
         threading.Thread.__init__(self)
 
         # setup thread variables
@@ -33,8 +33,10 @@ class mqttThread(threading.Thread):
         self.captureTopic = str(captureTopic)
         self.shutdownTopic = str(shutdownTopic)
         self.settingsTopic = str(settingsTopic)
+        self.pinsTopic = str(pinsTopic)
         self.fallbackLoopTime = fallbackLoopTime
         self.cameraThread = cameraThread
+        self.pinsThread = pinsThread
 
         self.cameraThread.update_annotation("Camera " + self.clientID + " Connecting...", "blue")
 
@@ -56,6 +58,12 @@ class mqttThread(threading.Thread):
         self.cameraThread.update_setting(settings["setting"],settings["value"])
         self.client.publish("debug", self.clientID + " updated " + str(settings["setting"])+ " "+str(settings["value"]))
 
+    def update_pin(self, payload):
+        settings = json.loads(payload)
+        self.client.publish("debug", self.clientID + " updating pin " + str(settings["pin"])+ " "+str(settings["value"]))
+        self.pinsThread.update_pin(settings["pin"],settings["value"])
+        self.client.publish("debug", self.clientID + " updated pin " + str(settings["pin"])+ " "+str(settings["value"]))
+
     def on_message(self, client, userdata, message):
         print("Received message '" + str(message.payload) + "' on topic '" + message.topic + "' with QoS " + str(message.qos))
 
@@ -65,6 +73,8 @@ class mqttThread(threading.Thread):
             self.shutdown()
         elif message.topic == self.settingsTopic:
             self.update_setting(message.payload)
+        elif message.topic == self.pinsTopic:
+            self.update_pin(message.payload)
 
     def on_connect(self, client, userdata, flags, rc):
         print("Connection returned " + str(rc))
@@ -86,6 +96,7 @@ class mqttThread(threading.Thread):
             self.client.subscribe(self.captureTopic, qos=0)
             self.client.subscribe(self.shutdownTopic, qos=0)
             self.client.subscribe(self.settingsTopic, qos=0)
+            self.client.subscribe(self.pinsTopic, qos=0)
 
             self.client.on_message = self.on_message
 

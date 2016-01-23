@@ -1,5 +1,6 @@
 from camera import cameraThread
 from network import mqttThread
+from pins import pinsThread
 import time
 import json
 import os
@@ -23,8 +24,10 @@ m = mqttThread(
     settings["captureTopic"],
     settings["shutdownTopic"],
     settings["settingsTopic"],
+    settings["pinsTopic"],
     settings["fallbackLoopTime"],
     cameraThread(settings["localImageFolder"], settingsFilePath, settings["camera_settings"]),
+    pinsThread(settingsFilePath, settings["pin_settings"]),
 )
 
 m.run()
