@@ -3,16 +3,18 @@
 import threading
 import time
 import picamera
+import json
+import os
 
 
 class cameraThread(threading.Thread):
     # setup the thread object
     # def __init__(self, id, brokerURL, brokerPort, settings):
-    def __init__(self, filePath, settings):
+    def __init__(self, filePath, settingsFilePath, settings):
         threading.Thread.__init__(self)
 
-        # settings
         self.filePath = filePath
+        self.settingsFilePath = settingsFilePath
 
         # set up camera
         self.camera = picamera.PiCamera()
@@ -43,5 +45,16 @@ class cameraThread(threading.Thread):
         self.camera.annotate_text = text
 
     def update_setting(self, setting, value):
-        setattr(self.camera, setting, int(value))
-        print getattr(self.camera, setting)
+        # live update
+        print "updating " + setting
+        setattr(self.camera, setting, value)
+
+        # save setting to file
+        data = None
+        with open(self.settingsFilePath, 'r+') as data_file:
+            data = json.load(data_file)
+            data["camera_settings"][setting] = value
+
+            data_file.seek(0)
+            json.dump(data, data_file, indent=2)
+            data_file.truncate() # clear out the file before saving

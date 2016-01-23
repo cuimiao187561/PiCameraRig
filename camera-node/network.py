@@ -54,6 +54,7 @@ class mqttThread(threading.Thread):
         settings = json.loads(payload)
         self.client.publish("debug", self.clientID + " updating " + str(settings["setting"])+ " "+str(settings["value"]))
         self.cameraThread.update_setting(settings["setting"],settings["value"])
+        self.client.publish("debug", self.clientID + " updated " + str(settings["setting"])+ " "+str(settings["value"]))
 
     def on_message(self, client, userdata, message):
         print("Received message '" + str(message.payload) + "' on topic '" + message.topic + "' with QoS " + str(message.qos))

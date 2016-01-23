@@ -11,8 +11,9 @@ os.system("sudo mount /dev/sda1 /media/usb -o uid=pi,gid=pi")
 # load settings from file
 
 settings = None
+settingsFilePath = '/media/usb/settings.json'
 
-with open('/media/usb/settings.json') as data_file:
+with open(settingsFilePath) as data_file:
     settings = json.load(data_file)
 
 m = mqttThread(
@@ -23,7 +24,7 @@ m = mqttThread(
     settings["shutdownTopic"],
     settings["settingsTopic"],
     settings["fallbackLoopTime"],
-    cameraThread(settings["localImageFolder"], settings["camera_settings"]),
+    cameraThread(settings["localImageFolder"], settingsFilePath, settings["camera_settings"]),
 )
 
 m.run()
