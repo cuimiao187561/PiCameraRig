@@ -9,7 +9,9 @@
   "localImageFolder": "/media/usb/images/",
   "camera_settings":{
     "hflip": true,
-    "vflip": true
+    "vflip": true,
+    "annotate_text_size": 128,
+    "led": false
   },
   "backupMountScript": "sudo mount -t cifs -o user=Qualia-A,password=manovich  //Qualia-As-Mac-mini.local/images /media/nas/",
   "backupDirectory": "/media/nas/A/",
